@@ -22,8 +22,8 @@
             padding: 0.25rem;
             position: fixed;
             bottom: 0;
-            left: 0;
-            right: 0;
+            left: 15%;
+            right: 15%;
             display: flex;
             height: 3rem;
             box-sizing: border-box;
@@ -83,11 +83,19 @@
             outline: none;
             color: #fff;
         }
+        .chat{
+            display: grid;
+            grid-template-columns: 15% 100% 15%;
+        }
 
-        #messages {
+        #messages {            
+            width: 70%;                    
             list-style-type: none;
             margin: 0;
             padding: 0;
+        }
+        #users {
+            list-style-type: none;
         }
 
         #messages>li {
@@ -109,8 +117,10 @@
         </form>
     </div>
 
-    <div>
-        <ul id="messages">
+    <div class="chat">    
+        <ul id="users">
+        </ul>   
+        <ul class="messages" id="messages">
         </ul>
     </div>
 
@@ -153,18 +163,28 @@
 
             socket.emit('set-nick', 'nick')
 
+
             socket.on('new user', (user) => {
-                var item = document.createElement('li');
-                item.textContent = `we have a new user with id ${user}`;
+                var item = document.createElement('li');                
+                item.textContent = `we have a new user. welcome ${user.name}`;
                 messages.appendChild(item);
                 window.scrollTo(0, document.body.scrollHeight);
+
+                var userLi = document.createElement('li');
+                userLi.setAttribute('id',user.id);
+                userLi.textContent = user.name;
+                document.getElementById('users').appendChild(userLi);               
             })
 
             socket.on('user disconnect', (user) => {
                 var item = document.createElement('li');
-                item.textContent = `user ${user} has disconnected`;
+                item.textContent = `user ${user.name} has disconnected`;
                 messages.appendChild(item);
-                window.scrollTo(0, document.body.scrollHeight);
+                window.scrollTo(0, document.body.scrollHeight);                
+            })
+
+            socket.on('usersChange', (users) => {
+                console.log(users);
             })
 
             socket.on('chat message', function (msg) {
